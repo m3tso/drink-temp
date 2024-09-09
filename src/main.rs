@@ -1,3 +1,4 @@
+use std::env;
 use std::f64::consts::E;
 use std::fs::read_to_string;
 use std::io::stdin;
@@ -85,8 +86,10 @@ struct Config {
 }
 
 fn load_config() -> Config {
+    let exe = env::current_exe().unwrap();
+    let dir = exe.parent().expect("There is always a parent dir.").to_str().unwrap();
     serde_json::from_str(
-        read_to_string("config.json")
+        read_to_string(dir.to_owned() + "./config.json")
             .expect("Config file is found and valid.")
             .as_str())
         .expect("Config file is found.")
