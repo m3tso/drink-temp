@@ -1,5 +1,5 @@
 use std::env;
-use std::f64::consts::E;
+use std::f64::consts::{E, PI};
 use std::fs::read_to_string;
 use std::io::stdin;
 use std::time::SystemTime;
@@ -14,12 +14,18 @@ fn main() {
     const DENSITY: f64 = 1000.0;
     let config: Config = load_config();
     let volume_ml: f64 = match config.check_volume {
-        true => read_volume(),
-        false => 330.0
+        true => {
+            println!("Enter volume of drink in ml: ");
+            read_volume()
+        }
+        false => {
+            330.0
+        }
     };
 
     // Convert ml to m^3.
     let volume: f64 = volume_ml / 1000000.0;
+
 
     loop {
         let elapsed = start_time.elapsed().unwrap();
@@ -33,7 +39,7 @@ fn main() {
                                     config.environment_temperature,
                                     config.initial_temperature,
                                     H,
-                                    config.can_area,
+                                    calculate_can_area(volume_ml),
                                     DENSITY, volume, config.specific_heat_capacity);
 
         println!("{:.1}°C", temperature);
@@ -65,7 +71,6 @@ fn soda_temp(
 }
 
 fn read_volume() -> f64 {
-    print!("Enter volume of drink in ml: ");
     let mut buffer = String::new();
 
     stdin().read_line(&mut buffer).unwrap();
@@ -76,11 +81,19 @@ fn read_volume() -> f64 {
     res
 }
 
+fn calculate_can_area(volume_ml: f64) -> f64 {
+    let volume_m3 = volume_ml / 1_000_000.0;
+    let radius_m = (volume_m3 / (2.0 * PI)).powf(1.0 / 3.0);
+    let height_m = 2.0 * radius_m;
+    let surface_area_m2 = 2.0 * PI * radius_m.powi(2) + 2.0 * PI * radius_m * height_m;
+
+    surface_area_m2
+}
+
 #[derive(Deserialize)]
 struct Config {
     environment_temperature: f64,
     initial_temperature: f64,
-    can_area: f64,
     specific_heat_capacity: f64,
     check_volume: bool,
 }
