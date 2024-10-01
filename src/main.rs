@@ -28,9 +28,9 @@ fn main() {
 
 
     loop {
-        let elapsed = start_time.elapsed().unwrap();
+        let time_elapsed = start_time.elapsed().unwrap();
 
-        let minutes: f64 = match elapsed.as_secs_f64() {
+        let minutes: f64 = match time_elapsed.as_secs_f64() {
             t if t > 0.0 => t / 60.0,
             _ => 0.0,
         };
